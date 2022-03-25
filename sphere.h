@@ -32,6 +32,7 @@ bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const
             rec.t = t;
             rec.p = r.at(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.normal = dot(r.direction(), rec.normal) < 0 ? rec.normal : (-rec.normal);//射线从内部射入，法线也在内部
             return true;
         }
         t = (-b + sqrt(discriminant)) / (2.0 * a);//因为近的点不在规定区间，用远的点尝试
@@ -40,6 +41,7 @@ bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const
             rec.t = t;
             rec.p = r.at(rec.t);
             rec.normal = (rec.p - center) / radius;
+            rec.normal = dot(r.direction(), rec.normal) < 0 ? rec.normal : (-rec.normal);//射线从内部射入，法线也在内部
             return true;
         }
     }
