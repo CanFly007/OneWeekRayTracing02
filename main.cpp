@@ -36,7 +36,7 @@ int main()
     const int image_height = 100;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-    vec3 lower_left_corner(-2.0, -1.0, -1.0);
+    vec3 lower_left_corner(-2.0, -1.0, -1.0);//下面四项是世界坐标
     vec3 horizontal(4.0, 0.0, 0.0);
     vec3 vertical(0.0, 2.0, 0.0);
     vec3 origin(0.0, 0.0, 0.0);
@@ -52,7 +52,7 @@ int main()
         {
             auto u = double(i) / image_width;
             auto v = double(j) / image_height;//从上到下1到0
-            ray r(origin, lower_left_corner + u * horizontal + v * vertical);
+            ray r(origin, lower_left_corner + u * horizontal + v * vertical);//u和v的范围是[0,1]，r是在世界坐标
             vec3 color = ray_color(r, world);
             color.write_color(std::cout);
         }
