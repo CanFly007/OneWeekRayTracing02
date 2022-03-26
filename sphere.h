@@ -17,7 +17,7 @@ public:
     double radius;
 };
 
-bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const
+bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const//从main函数搬到这来了，返回的值全在rec中
 {
     vec3 oc = r.origin() - center;
     double a = dot(r.direction(), r.direction());

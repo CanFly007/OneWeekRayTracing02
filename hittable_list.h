@@ -29,7 +29,7 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
 	double closest_so_far = t_max;
 	for (const shared_ptr<hittable>& object : objects)
 	{
-		if (object->hit(r, t_min, closest_so_far, tmp_record))
+		if (object->hit(r, t_min, closest_so_far, tmp_record))//因为closest_so_far更新，所以只会打到更近的才会更新
 		{
 			hit_anything = true;
 			closest_so_far = tmp_record.t;//射线打到一个物体，此时将max设置为打到物体的，如果再打到更近的才会更新
