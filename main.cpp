@@ -24,7 +24,7 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
         return vec3(0, 0, 0);
 
     hit_record rec;//sphere中计算的返回值全在这
-    if (world.hit(r, 0, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
+    if (world.hit(r, 0.001, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
     {
         vec3 target = rec.p + rec.normal + random_unit_vector();//兰伯特反射点
         return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
