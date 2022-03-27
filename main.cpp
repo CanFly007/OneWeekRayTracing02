@@ -18,12 +18,16 @@ double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数
         return (-b - sqrt(discriminant)) / (2.0 * a);
 }
 
-vec3 ray_color(const ray& r, const hittable_list& world)
+vec3 ray_color(const ray& r, const hittable_list& world,int depth)
 {
+    if (depth <= 0)
+        return vec3(0, 0, 0);
+
     hit_record rec;//sphere中计算的返回值全在这
     if (world.hit(r, 0, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
     {
-        return (rec.normal + 1.0) * 0.5;
+        vec3 target = rec.p + rec.normal + random_unit_vector();//兰伯特反射点
+        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -36,6 +40,7 @@ int main()
     const int image_width = 200;
     const int image_height = 100;
     const int samples_per_pixel = 100;
+    const int max_depth = 50;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
     vec3 lower_left_corner(-2.0, -1.0, -1.0);//下面四项是世界坐标
@@ -59,12 +64,15 @@ int main()
                 auto u = (i + random_double()) / image_width;//random_double()在一个像素内的随机
                 auto v = (j + random_double()) / image_height;//v的值从上到下1到0
                 ray r = cam.get_ray(u, v);
-                color += ray_color(r, world);//此时color是爆表颜色
+                color += ray_color(r, world, max_depth);//此时color是爆表颜色
             }
             color /= samples_per_pixel;
-            auto r = clamp(color.e[0], 0.0, 0.99);
-            auto g = clamp(color.e[1], 0.0, 0.99);
-            auto b = clamp(color.e[2], 0.0, 0.99);
+            auto r = sqrt(color.e[0]);//加sqrt是gamma矫正
+            auto g = sqrt(color.e[1]);
+            auto b = sqrt(color.e[2]);
+            r = clamp(r, 0.0, 0.99);
+            g = clamp(g, 0.0, 0.99);
+            b = clamp(b, 0.0, 0.99);
             color = vec3(r, g, b);
             color.write_color(std::cout);
         }

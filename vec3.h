@@ -1,6 +1,7 @@
 #ifndef VEC3_H
 #define VEC3_H
 
+#include "rtweekend.h"
 #include<iostream>
 
 class vec3
@@ -99,5 +100,13 @@ inline vec3 cross(const vec3& u, const vec3& v)
 inline vec3 unit_vector(vec3 v)
 {
 	return v / v.length();
+}
+
+vec3 random_unit_vector()//选取球面上一点
+{
+	double a = random_double(0, 2 * pi);
+	double z = random_double(-1, 1);
+	double r = sqrt(1 - z * z);//xy平面圆的半径
+	return vec3(cos(a) * r, sin(a) * r, z);
 }
 #endif
