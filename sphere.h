@@ -8,15 +8,17 @@ class sphere : public hittable
 {
 public:
     sphere() {}
-    sphere(vec3 cen, double r) : center(cen), radius(r) {};
+    sphere(vec3 cen, double r, shared_ptr<material> m) : center(cen), radius(r), mat_ptr(m) {};
 
     virtual bool hit(const ray& r, double tmin, double tmax, hit_record& rec) const;
 
 public:
     vec3 center;
     double radius;
+	shared_ptr<material> mat_ptr;
 };
 
+//hittable_list调用球类的hit函数
 bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const//从main函数搬到这来了，返回的值全在rec中
 {
     vec3 oc = r.origin() - center;
@@ -33,6 +35,7 @@ bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const/
             rec.p = r.at(rec.t);
             rec.normal = (rec.p - center) / radius;
             rec.normal = dot(r.direction(), rec.normal) < 0 ? rec.normal : (-rec.normal);//射线从内部射入，法线也在内部
+			rec.mat_ptr = mat_ptr;//碰撞的点记录的材质 为当前类对象的材质
             return true;
         }
         t = (-b + sqrt(discriminant)) / (2.0 * a);//因为近的点不在规定区间，用远的点尝试
@@ -42,6 +45,7 @@ bool sphere::hit(const ray& r, double tmin, double tmax, hit_record& rec) const/
             rec.p = r.at(rec.t);
             rec.normal = (rec.p - center) / radius;
             rec.normal = dot(r.direction(), rec.normal) < 0 ? rec.normal : (-rec.normal);//射线从内部射入，法线也在内部
+			rec.mat_ptr = mat_ptr;//碰撞的点记录的材质 为当前类对象的材质
             return true;
         }
     }

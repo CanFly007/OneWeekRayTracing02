@@ -3,6 +3,7 @@
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
+#include "material.h"
 #include <iostream>
 
 double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数t（最小那个最近），或者-1没碰到
@@ -26,8 +27,10 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     hit_record rec;//sphere中计算的返回值全在这
     if (world.hit(r, 0.001, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
     {
-        vec3 target = rec.p + rec.normal + random_unit_vector();//兰伯特反射点
-        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+		ray scattered;
+		vec3 attenuation;
+		rec.mat_ptr->scatter(r, rec, attenuation, scattered);//碰到的物体，发出scattered射线，变暗了多少atten
+		return attenuation * ray_color(scattered, world, depth - 1);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -49,8 +52,8 @@ int main()
     vec3 origin(0.0, 0.0, 0.0);
 
     hittable_list world;
-    world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5));
-    world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100));
+	world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5, make_shared<lambertian>(vec3(0.7, 0.3, 0.3))));
+	world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, make_shared<lambertian>(vec3(0.8, 0.8, 0.0))));
     camera cam;
 
     for (int j = image_height - 1; j >= 0; --j) //从上往下
