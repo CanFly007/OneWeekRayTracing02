@@ -29,8 +29,10 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     {
 		ray scattered;
 		vec3 attenuation;
-		rec.mat_ptr->scatter(r, rec, attenuation, scattered);//碰到的物体，发出scattered射线，变暗了多少atten
-		return attenuation * ray_color(scattered, world, depth - 1);
+		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
+			return attenuation * ray_color(scattered, world, depth - 1);
+		else
+			return vec3(0, 0, 0);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -54,6 +56,9 @@ int main()
     hittable_list world;
 	world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5, make_shared<lambertian>(vec3(0.7, 0.3, 0.3))));
 	world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, make_shared<lambertian>(vec3(0.8, 0.8, 0.0))));
+
+	world.add(make_shared<sphere>(vec3(1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.6, 0.2))));//0表示全吸收，所以0.2表示这个球吸收了很多蓝色，用(0.8,0.6,0.2)黄色颜色乘以后面的rayColor,
+	world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8))));
     camera cam;
 
     for (int j = image_height - 1; j >= 0; --j) //从上往下

@@ -27,4 +27,21 @@ public:
 public:
 	vec3 albedo;
 };
+
+class metal :public material
+{
+public:
+	metal(const vec3& a) :albedo(a) {}
+
+	virtual bool scatter(const ray& r_in, const hit_record& record, vec3& atten, ray& scattered)const
+	{
+		vec3 reflected = reflect(unit_vector(r_in.direction()), record.normal);
+		scattered = ray(record.p, reflected);
+		atten = albedo;
+		return (dot(scattered.direction(), record.normal) > 0);//从normal下面半球射入，反射的方向也是下半球，点积为负，光线不继续追踪
+	}
+
+public:
+	vec3 albedo;//决定变暗程度 atten 1表示不变暗，0表示全部吸收
+};
 #endif

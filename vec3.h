@@ -109,4 +109,9 @@ vec3 random_unit_vector()//选取球面上一点
 	double r = sqrt(1 - z * z);//xy平面圆的半径
 	return vec3(cos(a) * r, sin(a) * r, z);
 }
+
+vec3 reflect(const vec3& v, const vec3& n)
+{
+	return v - 2 * dot(v, n) * n;
+}
 #endif
