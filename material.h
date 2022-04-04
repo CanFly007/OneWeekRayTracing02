@@ -31,11 +31,12 @@ public:
 class metal :public material
 {
 public:
-	metal(const vec3& a) :albedo(a) {}
+	metal(const vec3& a, double f) :albedo(a), fuzz(f < 1 ? f : 1) {}
 
 	virtual bool scatter(const ray& r_in, const hit_record& record, vec3& atten, ray& scattered)const
 	{
 		vec3 reflected = reflect(unit_vector(r_in.direction()), record.normal);
+		reflected += fuzz * random_in_unit_sphere();//fuzz为金属材质球初始化时已赋值属性，偏移一点反射会模糊  0表示清晰 1表示最模糊
 		scattered = ray(record.p, reflected);
 		atten = albedo;
 		return (dot(scattered.direction(), record.normal) > 0);//从normal下面半球射入，反射的方向也是下半球，点积为负，光线不继续追踪
@@ -43,5 +44,6 @@ public:
 
 public:
 	vec3 albedo;//决定变暗程度 atten 1表示不变暗，0表示全部吸收
+	double fuzz;//反射模糊，在反射向量上做一个随机偏移
 };
 #endif

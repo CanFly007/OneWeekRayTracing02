@@ -44,6 +44,14 @@ public:
 	{
 		return sqrt(length_squared());
 	}
+	inline static vec3 random() 
+	{
+		return vec3(random_double(), random_double(), random_double());
+	}
+	inline static vec3 random(double min, double max) 
+	{
+		return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+	}
 	void write_color(std::ostream& out)
 	{
 		out << static_cast<int>(255.999 * e[0]) << ' '
@@ -108,6 +116,16 @@ vec3 random_unit_vector()//选取球面上一点
 	double z = random_double(-1, 1);
 	double r = sqrt(1 - z * z);//xy平面圆的半径
 	return vec3(cos(a) * r, sin(a) * r, z);
+}
+
+vec3 random_in_unit_sphere()//球体内随机一点
+{
+	while (true)
+	{
+		vec3 p = vec3::random(-1, 1);
+		if (p.length_squared() >= 1)continue;
+		return p;
+	}
 }
 
 vec3 reflect(const vec3& v, const vec3& n)
