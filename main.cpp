@@ -59,7 +59,13 @@ int main()
 
 	world.add(make_shared<sphere>(vec3(1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.5)));//0表示全吸收，所以0.2表示这个球吸收了很多蓝色，用(0.8,0.6,0.2)黄色颜色乘以后面的rayColor,
 	world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8), 0.5)));
-    camera cam;
+
+	const auto aspect = double(image_width) / image_height;
+	vec3 lookfrom(-2, 2, 1);
+	vec3 lookat(0, 0, -1);
+	vec3 vup(0, 1, 0);//首先用虚拟的Y轴
+	double fov = 90;
+	camera cam(lookfrom, lookat, vup, fov, aspect);
 
     for (int j = image_height - 1; j >= 0; --j) //从上往下
     {
