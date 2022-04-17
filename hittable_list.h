@@ -22,7 +22,7 @@ public:
 public:
 	std::vector<shared_ptr<hittable>> objects;
 };
-bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
+bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const//t_min t_max参数表示这条光线起点和终点，只有一段
 {
 	hit_record tmp_record;
 	bool hit_anything = false;
