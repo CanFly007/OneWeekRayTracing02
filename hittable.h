@@ -2,6 +2,7 @@
 #define HITTABLE_H
 
 #include "ray.h"
+#include "aabb.h"
 
 class material;
 
@@ -18,5 +19,6 @@ class hittable
 {
 public:
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0;
+    virtual bool bounding_box(aabb& output_box) const = 0;//返回false表示该物体没有包围盒，在子类out输出该物体包围盒
 };
 #endif // !HITTABLE_H
