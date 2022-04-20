@@ -28,7 +28,7 @@ hittable_list random_scene()
 
 	world.add(make_shared<sphere>(vec3(1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.5)));//0表示全吸收，所以0.2表示这个球吸收了很多蓝色，用(0.8,0.6,0.2)黄色颜色乘以后面的rayColor,
 	world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8), 0.5)));
-
+    //hittable_list构造函数中，把bvh_node*变成hittable*，只add一个bvh_node*元素到objects中
 	return static_cast<hittable_list>(make_shared<bvh_node>(world));
 	return world;
 }

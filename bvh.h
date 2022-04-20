@@ -87,6 +87,8 @@ bvh_node::bvh_node(std::vector<shared_ptr<hittable>>& objects, size_t start, siz
 	box = surrounding_box(box_left, box_right);//最底层是由左右2个真实物体构成的box，赋值给这个bvh_node对象的box变量
 }
 
+//hittable_list类调用object->hit，实际上objects里面只有一个bvh_node*元素
+//每个bvh_node节点都有aabb盒子，底下的left和right可能也是bvh_node，或者是最底层sphere实物hit函数
 bool bvh_node::hit(const ray& r, double tmin, double tmax, hit_record& rec) const
 {
 	//用了aabb里的hit
