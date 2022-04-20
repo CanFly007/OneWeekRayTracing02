@@ -7,6 +7,10 @@
 #include "material.h"
 #include <iostream>
 
+#include "texture.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数t（最小那个最近），或者-1没碰到
 {
     vec3 oc = r.origin() - center;
@@ -30,6 +34,29 @@ hittable_list random_scene()
 	world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8), 0.5)));
     //hittable_list构造函数中，把bvh_node*变成hittable*，只add一个bvh_node*元素到objects中
 	return static_cast<hittable_list>(make_shared<bvh_node>(world));
+	return world;
+}
+hittable_list earth()
+{
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+	
+	//Test:
+	image_texture imaTex = image_texture(data, width, height);
+	for (int j = 100 - 1; j >= 0; --j) //从上往下
+	{
+		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+		for (int i = 0; i < 200; ++i)
+		{
+			double u = i / 200.0;
+			double v = j / 100.0;
+			vec3 color = imaTex.value(u, v);
+			color.write_color(std::cout);
+		}
+	}
+	//stbi_image_free(data);
+	
+	hittable_list world;
 	return world;
 }
 
@@ -67,8 +94,8 @@ int main()
     vec3 vertical(0.0, 2.0, 0.0);
     vec3 origin(0.0, 0.0, 0.0);
 
-	hittable_list world = random_scene();
-
+	hittable_list world = earth();
+	return 1;
 	const auto aspect = double(image_width) / image_height;
 	vec3 lookfrom(-2, 2, 1);
 	vec3 lookat(0, 0, -1);
