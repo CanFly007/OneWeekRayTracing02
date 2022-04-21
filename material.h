@@ -22,7 +22,8 @@ public:
 	{
 		vec3 target = record.normal + random_unit_vector();//兰伯特反射点
 		scattered = ray(record.p, target);
-		atten = albedo->value(record.u, record.v);//构建这个兰伯特材质时就初始化好了，所以直接赋值返回输出形参
+		atten = albedo->value(record.u, record.v);//vec3构建函数时：这个兰伯特材质时就初始化好了，所以直接赋值返回输出形参
+												  //纹理构造函数时：record.u和v是hit到sphere时，已经计算好了，scatter函数在hit成功后计算
 		return true;
 	}
 

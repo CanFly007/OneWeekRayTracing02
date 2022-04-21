@@ -27,8 +27,9 @@ double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数
 hittable_list random_scene()
 {
 	hittable_list world;
-	world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5, make_shared<lambertian>(vec3(0.7, 0.3, 0.3))));
-	world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, make_shared<lambertian>(vec3(0.8, 0.8, 0.0))));
+    //因为lambertian类中构造函数从vec3变成texture，所以注释
+	//world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5, make_shared<lambertian>(vec3(0.7, 0.3, 0.3))));
+	//world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, make_shared<lambertian>(vec3(0.8, 0.8, 0.0))));
 
 	world.add(make_shared<sphere>(vec3(1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.6, 0.2), 0.5)));//0表示全吸收，所以0.2表示这个球吸收了很多蓝色，用(0.8,0.6,0.2)黄色颜色乘以后面的rayColor,
 	world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8), 0.5)));
@@ -39,25 +40,13 @@ hittable_list random_scene()
 hittable_list earth()
 {
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("earthmap.jpg", &width, &height, &nrChannels, 0);
 	
-	//Test:
-	image_texture imaTex = image_texture(data, width, height);
-	for (int j = 100 - 1; j >= 0; --j) //从上往下
-	{
-		std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-		for (int i = 0; i < 200; ++i)
-		{
-			double u = i / 200.0;
-			double v = j / 100.0;
-			vec3 color = imaTex.value(u, v);
-			color.write_color(std::cout);
-		}
-	}
-	//stbi_image_free(data);
-	
-	hittable_list world;
-	return world;
+    shared_ptr<image_texture> earthTex = make_shared<image_texture>(data, width, height);
+    shared_ptr<lambertian> earthMat = make_shared<lambertian>(earthTex);//之前的兰伯特构造函数是接受vec3颜色，现在接受一张纹理
+    shared_ptr<sphere> globe = make_shared<sphere>(vec3(0, 0, 0), 2, earthMat);
+
+    return hittable_list(globe);//hittable_list构造函数再调用add函数，objects包含一个元素->globe
 }
 
 vec3 ray_color(const ray& r, const hittable_list& world,int depth)
@@ -95,8 +84,8 @@ int main()
     vec3 origin(0.0, 0.0, 0.0);
 
 	hittable_list world = earth();
-	return 1;
-	const auto aspect = double(image_width) / image_height;
+
+    const auto aspect = double(image_width) / image_height;
 	vec3 lookfrom(-2, 2, 1);
 	vec3 lookat(0, 0, -1);
 	vec3 vup(0, 1, 0);//首先用虚拟的Y轴
