@@ -12,6 +12,9 @@ struct hit_record
     vec3 normal;//碰撞的normal
     double t;//那个点在ray直线上的系数t
 	shared_ptr<material> mat_ptr;//碰到那个点的材质情况（1怎么发散，2发散的ray衰减多少）
+
+	double u;
+	double v;
 };
 
 //任何可能与光线求交的东西实现时都继承这个类

@@ -69,7 +69,7 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     if (world.hit(r, 0.001, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
     {
 		ray scattered;
-		vec3 attenuation;
+		vec3 attenuation;//atten可以理解为这次碰撞的颜色值，最终加入到ray_color的递归结果，所以是物体的albedo
 		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
 			return attenuation * ray_color(scattered, world, depth - 1);
 		else
