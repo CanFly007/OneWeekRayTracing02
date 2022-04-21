@@ -20,7 +20,6 @@ public:
 
 private:
     //球的uv，按照球面坐标系 u为水平phi角度，v是竖直方向theta角度，然后将角度范围归一化到[0,1]
-
     static void get_sphere_uv(const vec3& p, double& u, double& v)
     {
         double phi = atan2(p.z(), p.x());//[-pi, pi] phi是与x正方向的夹角，且朝向z轴正方向为正值，只有这样笛卡尔坐标系转换时正负才是对的

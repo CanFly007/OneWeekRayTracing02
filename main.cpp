@@ -86,10 +86,10 @@ int main()
 	hittable_list world = earth();
 
     const auto aspect = double(image_width) / image_height;
-	vec3 lookfrom(-2, 2, 1);
-	vec3 lookat(0, 0, -1);
+	vec3 lookfrom(0, 0, 12);
+	vec3 lookat(0, 0, 0);
 	vec3 vup(0, 1, 0);//首先用虚拟的Y轴
-	double fov = 90;
+	double fov = 20;
 	camera cam(lookfrom, lookat, vup, fov, aspect);
 
     for (int j = image_height - 1; j >= 0; --j) //从上往下
