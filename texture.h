@@ -22,13 +22,14 @@ public:
 		delete data;
 	}
 
+	//每个像素的uv坐标，获得这张图对应位置纹素[0,1] vec3值
 	virtual vec3 value(double u, double v)const
 	{
 		if (data == nullptr)
 			return vec3(1, 1, 0);
 
 		int i = static_cast<int>((u)* nx); // 在这一行的某像素
-		int j = static_cast<int>((1 - v) * ny - 0.001);//在这一列的某像素
+		int j = static_cast<int>((1 - v) * ny - 0.001);//main中从上到下，v的uv坐标从1开始到0，而j从0开始计算，所以data数据从一张纹理的左上开始
 
 		//clamp一下
 		if (i < 0)i = 0;
