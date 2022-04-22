@@ -10,6 +10,12 @@ class material
 public:
 	//1、生成散射后的ray 2、吸收后变暗了多少atten
 	virtual bool scatter(const ray& r_in, const hit_record& record, vec3& atten, ray& scattered)const = 0;
+
+	//不是纯虚函数，不用每个材质都实现emitted函数
+	virtual vec3 emitted(double u, double v)const
+	{
+		return vec3(0, 0, 0);
+	}
 };
 
 class lambertian : public material
@@ -48,5 +54,24 @@ public:
 public:
 	vec3 albedo;//决定变暗程度 atten 1表示不变暗，0表示全部吸收
 	double fuzz;//反射模糊，在反射向量上做一个随机偏移
+};
+
+//自发光材质,接收constant_texture作为构造函数
+class diffuse_light :public material
+{
+public:
+	shared_ptr<texture> emit;
+
+public:
+	diffuse_light(shared_ptr<texture> a) :emit(a) {}
+
+	virtual bool scatter(const ray& r_in, const hit_record& record, vec3& atten, ray& scattered)const
+	{
+		return false;//光线ray碰到这个自发光灯，就不再散射光线出去了
+	}
+	virtual vec3 emitted(double u, double v)const
+	{
+		return emit->value(u, v);
+	}
 };
 #endif

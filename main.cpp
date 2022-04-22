@@ -59,11 +59,15 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     {
 		ray scattered;
 		vec3 attenuation;//atten可以理解为这次碰撞的颜色值，最终加入到ray_color的递归结果，所以是物体的albedo
-		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
-			return attenuation * ray_color(scattered, world, depth - 1);
-		else
-			return vec3(0, 0, 0);
+        vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v);//自发光材质的颜色
+        if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
+            return attenuation * ray_color(scattered, world, depth - 1);
+        else//金属材质内部射入或自发光材质都scatter返回false
+            return emitted;//打到自发光材质，返回亮度。或打到金属内部，返回000
     }
+
+    //通过遍历hittable_list，这条ray没打到world中任何东西，返回背景色，之前有颜色，现在为黑色
+    return vec3(0, 0, 0);
 
     vec3 unit_direction = unit_vector(r.direction());
     double t = 0.5 * (unit_direction.y() + 1.0);

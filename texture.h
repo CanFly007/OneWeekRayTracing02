@@ -47,5 +47,21 @@ public:
 	}
 };
 
+class constant_texture :public texture
+{
+public:
+	vec3 color;
+
+public:
+	constant_texture() {}
+	constant_texture(vec3 c) :color(c) {}
+
+	virtual vec3 value(double u, double v)const
+	{
+		return color;//不用管uv，返回固定颜色即可，固定颜色在构造这个texture时候已经赋值
+	}
+
+};
+
 #endif // !TEXTURE_H
 
