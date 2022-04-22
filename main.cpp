@@ -10,6 +10,7 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "rect.h"
 
 double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数t（最小那个最近），或者-1没碰到
 {
@@ -48,6 +49,28 @@ hittable_list earth()
 
     return hittable_list(globe);//hittable_list构造函数再调用add函数，objects包含一个元素->globe
 }
+hittable_list simple_light()//一盏灯光，一个地球
+{
+	hittable_list objects;
+	shared_ptr<constant_texture> groundTex = make_shared<constant_texture>(vec3(0.8, 0.8, 0.0));
+	shared_ptr<lambertian> groundMat = make_shared<lambertian>(groundTex);
+	shared_ptr<sphere> ground = make_shared<sphere>(vec3(0, -1000, 0), 1000, groundMat);
+	objects.add(ground);
+
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("earthmap.jpg", &width, &height, &nrChannels, 0);
+	shared_ptr<image_texture> earthTex = make_shared<image_texture>(data, width, height);
+	shared_ptr<lambertian> earthMat = make_shared<lambertian>(earthTex);//之前的兰伯特构造函数是接受vec3颜色，现在接受一张纹理
+	shared_ptr<sphere> globe = make_shared<sphere>(vec3(0, 2, 0), 2, earthMat);
+	objects.add(globe);
+
+	shared_ptr<constant_texture> lightTex = make_shared<constant_texture>(vec3(4, 4, 4));
+	shared_ptr<diffuse_light> lightMat = make_shared<diffuse_light>(lightTex);
+	shared_ptr<xy_rect> xyRect = make_shared<xy_rect>(3, 5, 1, 3, -2, lightMat);
+	objects.add(xyRect);
+
+	return objects;
+}
 
 vec3 ray_color(const ray& r, const hittable_list& world,int depth)
 {
@@ -58,12 +81,14 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     if (world.hit(r, 0.001, infinity, rec))//world中每个物体都会和这条ray判断，在hittable_list会及时更新t_max，以打到最近的hittable
     {
 		ray scattered;
-		vec3 attenuation;//atten可以理解为这次碰撞的颜色值，最终加入到ray_color的递归结果，所以是物体的albedo
-        vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v);//自发光材质的颜色
+		vec3 attenuation;//atten可以理解为这次碰撞的颜色值，最终加入到ray_color的递归结果，所以是物体的albedo        
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
             return attenuation * ray_color(scattered, world, depth - 1);
-        else//金属材质内部射入或自发光材质都scatter返回false
-            return emitted;//打到自发光材质，返回亮度。或打到金属内部，返回000
+		else//金属材质内部射入或自发光材质都scatter返回false
+		{
+			vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v);//自发光材质的颜色
+			return emitted;//打到自发光材质，返回亮度。或打到金属内部，返回000
+		}
     }
 
     //通过遍历hittable_list，这条ray没打到world中任何东西，返回背景色，之前有颜色，现在为黑色
@@ -95,13 +120,18 @@ int main()
     vec3 vup(0, 1, 0);//首先用虚拟的Y轴
     double fov;
 
-    switch (0)
+    switch (1)
     {
     case 0:
         world = earth();
         lookfrom = vec3(0, 0, 12);
         lookat = vec3(0, 0, 0);
         fov = 20;
+	case 1:
+		world = simple_light();
+		lookfrom = vec3(26, 3, 6);
+		lookat = vec3(0, 2, 0);
+		fov = 20;
     default:
         break;
     }
