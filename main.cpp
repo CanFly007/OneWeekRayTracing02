@@ -83,13 +83,25 @@ int main()
     vec3 vertical(0.0, 2.0, 0.0);
     vec3 origin(0.0, 0.0, 0.0);
 
-	hittable_list world = earth();
+    hittable_list world;
 
     const auto aspect = double(image_width) / image_height;
-	vec3 lookfrom(0, 0, 12);
-	vec3 lookat(0, 0, 0);
-	vec3 vup(0, 1, 0);//首先用虚拟的Y轴
-	double fov = 20;
+    vec3 lookfrom;
+    vec3 lookat;
+    vec3 vup(0, 1, 0);//首先用虚拟的Y轴
+    double fov;
+
+    switch (0)
+    {
+    case 0:
+        world = earth();
+        lookfrom = vec3(0, 0, 12);
+        lookat = vec3(0, 0, 0);
+        fov = 20;
+    default:
+        break;
+    }
+
 	camera cam(lookfrom, lookat, vup, fov, aspect);
 
     for (int j = image_height - 1; j >= 0; --j) //从上往下
