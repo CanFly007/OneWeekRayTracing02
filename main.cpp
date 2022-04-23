@@ -71,6 +71,27 @@ hittable_list simple_light()//一盏灯光，一个地球
 
 	return objects;
 }
+hittable_list cornell_box()
+{
+	hittable_list objects;
+	shared_ptr<constant_texture> redTex = make_shared<constant_texture>(vec3(0.65, 0.05, 0.05));
+	shared_ptr<constant_texture> whiteTex = make_shared<constant_texture>(vec3(0.73, 0.73, 0.73));
+	shared_ptr<constant_texture> greenTex = make_shared<constant_texture>(vec3(0.12, 0.45, 0.15));
+	shared_ptr<constant_texture> lightTex = make_shared<constant_texture>(vec3(15, 15, 15));
+
+	shared_ptr<lambertian> redMat = make_shared<lambertian>(redTex);
+	shared_ptr<lambertian> whiteMat = make_shared<lambertian>(whiteTex);
+	shared_ptr<lambertian> greenMat = make_shared<lambertian>(greenTex);
+	shared_ptr<diffuse_light> lightMat = make_shared<diffuse_light>(lightTex);
+	
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, greenMat));//右边墙
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, redMat));//左边墙
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, whiteMat));//底部
+	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, whiteMat));//右手坐标系，z轴正方向那面墙，摄像机在z轴负值，看向z轴原点
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, whiteMat));//顶部
+	objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, lightMat));//灯光
+	return objects;
+}
 
 vec3 ray_color(const ray& r, const hittable_list& world,int depth)
 {
@@ -120,7 +141,7 @@ int main()
     vec3 vup(0, 1, 0);//首先用虚拟的Y轴
     double fov;
 
-    switch (1)
+    switch (2)
     {
     case 0:
         world = earth();
@@ -132,6 +153,11 @@ int main()
 		lookfrom = vec3(26, 3, 6);
 		lookat = vec3(0, 2, 0);
 		fov = 20;
+	case 2:
+		world = cornell_box();
+		lookfrom = vec3(278, 278, -800);
+		lookat = vec3(278, 278, 0);
+		fov = 40;
     default:
         break;
     }
