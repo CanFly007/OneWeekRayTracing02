@@ -94,7 +94,7 @@ hittable_list cornell_box()
 	objects.add(make_shared<box>(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat));
 	objects.add(make_shared<box>(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat));
 
-	return static_cast<hittable_list>(make_shared<bvh_node>(objects));//46s更慢了 100 100 50
+	//return static_cast<hittable_list>(make_shared<bvh_node>(objects));//46s更慢了 100 100 50
 	return objects;//33s w100 h100 s50
 }
 
@@ -129,8 +129,8 @@ int main()
 {
     const int image_width = 100;
     const int image_height = 100;
-    const int samples_per_pixel = 50;
-    const int max_depth = 50;
+    const int samples_per_pixel = 500;
+    const int max_depth = 100;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
     vec3 lower_left_corner(-2.0, -1.0, -1.0);//下面四项是世界坐标

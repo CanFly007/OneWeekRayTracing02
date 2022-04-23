@@ -117,7 +117,7 @@ bool yz_rect::hit(const ray& r, double t_min, double t_max, hit_record& rec)cons
 
 	rec.t = t;
 	rec.p = vec3(k, y, z);
-	rec.normal = dot(vec3(0, 1, 0), r.direction()) < 0 ? vec3(0, 1, 0) : vec3(0, -1, 0);
+	rec.normal = dot(vec3(1, 0, 0), r.direction()) < 0 ? vec3(1, 0, 0) : vec3(-1, 0, 0);
 	rec.mat_ptr = mat;
 	rec.u = (y - y0) / (y1 - y0);
 	rec.v = (z - z0) / (z1 - z0);
