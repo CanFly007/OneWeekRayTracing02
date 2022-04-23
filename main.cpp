@@ -110,7 +110,7 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
 		vec3 attenuation;//atten可以理解为这次碰撞的颜色值，最终加入到ray_color的递归结果，所以是物体的albedo        
         if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))//碰到的物体，发出scattered射线，变暗了多少atten
             return attenuation * ray_color(scattered, world, depth - 1);
-		else//金属材质内部射入或自发光材质都scatter返回false
+		else//金属材质内部射入或自发光材质都scatter返回false。金属内部属于异常ray,而打到光源这条ray截止
 		{
 			vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v);//自发光材质的颜色
 			return emitted;//打到自发光材质，返回亮度。或打到金属内部，返回000
@@ -118,6 +118,10 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
     }
 
     //通过遍历hittable_list，这条ray没打到world中任何东西，返回背景色，之前有颜色，现在为黑色
+    //光线一旦从缺口跑出去，这条光线就是黑色的了，这也说明samples_per_pixel是2000比4000时候黑点要多
+    //因为一个像素射出4000条ray时，虽然也有逃逸，但也有打到光源变亮的可能性变大变多，所以黑点会降低
+    //可以想，这个像素2000个中有1500个逃逸了，这个像素只有500个有颜色，只有50个打到光源，被平均后逃逸的黑色占主导
+    //4000时候逃逸还是有，只不过更精准了
     return vec3(0, 0, 0);
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -129,8 +133,8 @@ int main()
 {
     const int image_width = 100;
     const int image_height = 100;
-    const int samples_per_pixel = 500;
-    const int max_depth = 100;
+    const int samples_per_pixel = 4000;
+    const int max_depth = 200;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
     vec3 lower_left_corner(-2.0, -1.0, -1.0);//下面四项是世界坐标
