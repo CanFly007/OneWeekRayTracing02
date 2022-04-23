@@ -10,7 +10,7 @@
 #include "texture.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "rect.h"
+#include "box.h"
 
 double hit_sphere(const vec3& center, double radius, const ray& r)//返回直线系数t（最小那个最近），或者-1没碰到
 {
@@ -84,13 +84,18 @@ hittable_list cornell_box()
 	shared_ptr<lambertian> greenMat = make_shared<lambertian>(greenTex);
 	shared_ptr<diffuse_light> lightMat = make_shared<diffuse_light>(lightTex);
 	
-	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, greenMat));//右边墙
-	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, redMat));//左边墙
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, greenMat));//右边墙，因为是负方向看，所以是左边墙
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, redMat));//左边墙，同上，变成右边墙，都是右手坐标系
 	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, whiteMat));//底部
 	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, whiteMat));//右手坐标系，z轴正方向那面墙，摄像机在z轴负值，看向z轴原点
 	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, whiteMat));//顶部
 	objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, lightMat));//灯光
-	return objects;
+
+	objects.add(make_shared<box>(vec3(130, 0, 65), vec3(295, 165, 230), whiteMat));
+	objects.add(make_shared<box>(vec3(265, 0, 295), vec3(430, 330, 460), whiteMat));
+
+	return static_cast<hittable_list>(make_shared<bvh_node>(objects));//46s更慢了 100 100 50
+	return objects;//33s w100 h100 s50
 }
 
 vec3 ray_color(const ray& r, const hittable_list& world,int depth)
@@ -122,9 +127,9 @@ vec3 ray_color(const ray& r, const hittable_list& world,int depth)
 
 int main() 
 {
-    const int image_width = 200;
+    const int image_width = 100;
     const int image_height = 100;
-    const int samples_per_pixel = 100;
+    const int samples_per_pixel = 50;
     const int max_depth = 50;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
